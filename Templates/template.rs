@@ -1,6 +1,5 @@
 #![allow(unused)]
 
-#[allow(unused_imports)]
 use std::{cmp, collections, fmt, io, iter, ops, str};
 use cmp::Ordering::*;
 use collections::{HashMap, HashSet};
