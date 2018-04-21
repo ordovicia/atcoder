@@ -17,6 +17,7 @@ debug = []
 EOF
 
     cp $root/Templates/template.rs $1/src/main.rs
+    cp $root/Templates/test.sh $1/src/
 }
 
 shift
