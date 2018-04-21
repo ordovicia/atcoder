@@ -8,13 +8,23 @@ use io::{Read, Write};
 #[cfg(feature = "debug")]
 macro_rules! debug {
     ($fmt: expr) => { eprintln!($fmt) };
-    ($fmt: expr, $($arg: tt)*) => { eprintln!($fmt, $($arg)*) };
+    ($fmt: expr, $($args: tt)*) => { eprintln!($fmt, $($args)*) };
 }
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debug {
     ($fmt: expr) => {};
-    ($fmt: expr, $($arg: tt)*) => {};
+    ($fmt: expr, $($args: tt)*) => {};
+}
+
+macro_rules! vmax {
+    ($x: expr, $y: expr) => { cmp::max($x, $y) };
+    ($x: expr, $($args: expr),*) => { cmp::max($x, vmax!($($args),*)) };
+}
+
+macro_rules! vmin {
+    ($x: expr, $y: expr) => { cmp::min($x, $y) };
+    ($x: expr, $($args: expr),*) => { cmp::min($x, vmin!($($args),*)) };
 }
 
 fn read_line() -> String {
