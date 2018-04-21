@@ -1,8 +1,8 @@
 #![allow(unused)]
 
 use std::{cmp, collections, fmt, io, iter, ops, str};
-use cmp::Ordering::*;
-use collections::{HashMap, HashSet};
+use cmp::Ordering::{Equal, Greater, Less};
+use collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use io::{Read, Write};
 
 #[cfg(feature = "debug")]
