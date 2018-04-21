@@ -19,6 +19,14 @@ EOF
     cp $root/Templates/template.rs $1/src/main.rs
 }
 
-create_dir b
-create_dir c
-create_dir d
+shift
+
+if [ $# -eq 0 ]; then
+    create_dir b
+    create_dir c
+    create_dir d
+else
+    for d in $@; do
+        create_dir $d
+    done
+fi
