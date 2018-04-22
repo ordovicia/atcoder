@@ -8,27 +8,25 @@ mkdir $1
 cd $_
 
 create_dir() {
-    cargo new --bin --vcs none $1
-
-    cat >> $1/Cargo.toml << EOF
+    for d in $@; do
+        cargo new --bin --vcs none $d
+        cat >> $d/Cargo.toml << EOF
 
 [features]
 debug = []
 EOF
 
-    cp $root/Templates/template.rs $1/src/main.rs
-    mkdir $1/tests/
-    cp $root/Templates/test.sh $1/
+        cp $root/Templates/template.rs $d/src/main.rs
+
+        mkdir $d/tests/
+        cp $root/Templates/test.sh $d/
+    done
 }
 
 shift
 
 if [ $# -eq 0 ]; then
-    create_dir b
-    create_dir c
-    create_dir d
+    create_dir a b c d
 else
-    for d in $@; do
-        create_dir $d
-    done
+    create_dir $@
 fi
