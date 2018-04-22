@@ -1,0 +1,9 @@
+[package]
+name = "b"
+version = "0.1.0"
+authors = ["Hidehito Yabuuchi <hdht.ybuc@gmail.com>"]
+
+[dependencies]
+
+[features]
+debug = []
