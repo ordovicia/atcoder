@@ -4,8 +4,10 @@ set -eu
 
 root=$(cd $(dirname $0); pwd)
 
-mkdir $1
-cd $_
+if [ ! -e $1 ]; then
+    mkdir $1
+fi
+cd $1
 
 create_dir() {
     for d in $@; do
