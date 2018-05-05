@@ -85,16 +85,8 @@ fn main() {
         *e -= 1;
     }
 
-    debug!("{:?}", strings);
-
-    let (mut max_string, mut max_count) = (None, 0);
-    for (s, c) in &strings {
-        if *c > max_count {
-            max_string = Some(s);
-            max_count = *c;
-        }
-    }
-
+    let max_count = strings.values().max().unwrap();
+    let max_count = cmp::max(0, *max_count);
     println!("{}", max_count);
 }
 
