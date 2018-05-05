@@ -27,20 +27,6 @@ macro_rules! vmin {
     ($x: expr, $($args: expr),*) => { cmp::min($x, vmin!($($args),*)) };
 }
 
-fn main() {
-    //
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test() {
-        //
-    }
-}
-
 fn read_line() -> String {
     let mut buf = String::new();
     io::stdin().read_line(&mut buf).unwrap();
@@ -91,17 +77,36 @@ fn flush() {
     io::stdout().flush();
 }
 
-fn next_prime(x: i32) -> i32 {
-    for i in (x + 1).. {
-        if is_prime(i) {
-            return i;
-        }
-    }
+fn main() {
+    let n = parse_line::<usize>();
 
-    panic!("attempt to add with overflow");
+    let primes = (1..)
+        .map(|x| 5 * x + 1)
+        .take_while(|&x| x < 55555)
+        .filter(|&x| is_prime(x))
+        .take(n);
+
+    for p in primes {
+        print!("{} ", p);
+    }
+    println!();
 }
 
 fn is_prime(x: i32) -> bool {
     let ceil = (x as f64).sqrt().ceil() as i32;
     x == 2 || (2..(ceil + 1)).all(|i| x % i != 0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_prime() {
+        assert!(is_prime(2));
+        assert!(is_prime(3));
+        assert!(!is_prime(4));
+        assert!(is_prime(5));
+        assert!(!is_prime(9));
+    }
 }
