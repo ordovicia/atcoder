@@ -1,6 +1,8 @@
 #![allow(unused)]
 
-use std::{cmp, collections, fmt, io, iter, ops, str};
+use std::{cell, cmp, collections, fmt, io, iter, ops, str};
+
+use cell::{Cell, RefCell};
 use cmp::Ordering::{Equal, Greater, Less};
 use collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use io::{Read, Write};
@@ -13,8 +15,8 @@ macro_rules! debug {
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debug {
-    ($fmt: expr) => {};
-    ($fmt: expr, $($args: tt)*) => {};
+    ($fmt:expr) => {};
+    ($fmt:expr, $($args:tt)*) => {};
 }
 
 macro_rules! vmax {
@@ -66,7 +68,7 @@ fn read_word() -> String {
             }
         }
 
-        if buf.len() > 0 {
+        if !buf.is_empty() {
             return String::from_utf8(buf).unwrap();
         }
     }
@@ -102,6 +104,6 @@ fn next_prime(x: i32) -> i32 {
 }
 
 fn is_prime(x: i32) -> bool {
-    let ceil = (x as f64).sqrt().ceil() as i32;
+    let ceil = f64::from(x).sqrt().ceil() as i32;
     x == 2 || (2..(ceil + 1)).all(|i| x % i != 0)
 }
