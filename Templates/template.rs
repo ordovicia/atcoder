@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use std::{cell, cmp, collections, fmt, io, iter, ops, str};
+use std::{cell, cmp, collections, convert, fmt, io, iter, ops, str};
 
 use cell::{Cell, RefCell};
 use cmp::Ordering::{Equal, Greater, Less};
@@ -9,14 +9,22 @@ use io::{Read, Write};
 
 #[cfg(feature = "debug")]
 macro_rules! debug {
-    ($fmt: expr) => { eprintln!($fmt) };
-    ($fmt: expr, $($args: tt)*) => { eprintln!($fmt, $($args)*) };
+    ($($args: tt)*) => { eprint!($($args)*) };
+}
+
+#[cfg(feature = "debug")]
+macro_rules! debugln {
+    ($($args: tt)*) => { eprintln!($($args)*) };
 }
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debug {
-    ($fmt:expr) => {};
-    ($fmt:expr, $($args:tt)*) => {};
+    ($($args:tt)*) => {};
+}
+
+#[cfg(not(feature = "debug"))]
+macro_rules! debugln {
+    ($($args:tt)*) => {};
 }
 
 macro_rules! vmax {
