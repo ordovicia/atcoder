@@ -115,3 +115,7 @@ fn is_prime(x: i32) -> bool {
     let ceil = f64::from(x).sqrt().ceil() as i32;
     x == 2 || (2..(ceil + 1)).all(|i| x % i != 0)
 }
+
+fn bit_high(bits: u64, pos: u64) -> bool {
+    bits & (1 << pos) != 0
+}
