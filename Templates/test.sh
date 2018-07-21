@@ -16,6 +16,10 @@ else
 fi
 
 for f in *.in; do
+    if [ $(wc -l $f | cut -d' ' -f 1) = 0 ]; then
+        continue;
+    fi
+
     echo -n "Running \"$f\" ... "
 
     expected="$(cat ${f%.in}.out)"
