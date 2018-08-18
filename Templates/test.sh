@@ -1,19 +1,21 @@
 #!/bin/bash
 
-echo_red() {
+error() {
     echo -e "\033[031m" $1 "\033[0m"
 }
 
 root=$(cd $(dirname $0); pwd)
-cd $root/tests
+cd $root
 
 echo -n "Building ..."
 if ! cargo build 2> /dev/null; then
-    echo_red "Failed"
+    error "Failed"
     exit 1
 else
     echo
 fi
+
+cd $root/testcases
 
 for f in *.in; do
     if [ $(wc -l $f | cut -d' ' -f 1) = 0 ]; then
@@ -26,7 +28,7 @@ for f in *.in; do
     actually="$(cargo run < $f 2> /dev/null)"
 
     if [ "$expected" != "$actually" ]; then
-        echo_red "Failed."
+        error "Failed."
         cat << EOF
 Expected:
 $expected
