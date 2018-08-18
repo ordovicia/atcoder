@@ -148,24 +148,3 @@ mod bits {
         bits & (1 << pos) != 0
     }
 }
-
-#[cfg(test)]
-mod tests_lib {
-    use super::*;
-
-    #[test]
-    fn test_min_max() {
-        assert_eq!(vmin!(2, 3, 1), 1);
-        assert_eq!(vmax!(2, 3, 1), 3);
-
-        let v = vec![2, 3, 1];
-        assert_eq!(*num::imin(&v), 1);
-        assert_eq!(*num::imax(&v), 3);
-    }
-
-    #[test]
-    fn test_bit_high() {
-        assert!(bits::bit_high(0b0101, 0));
-        assert!(!bits::bit_high(0b0101, 1));
-    }
-}
