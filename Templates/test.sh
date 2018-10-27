@@ -1,6 +1,6 @@
 #!/bin/bash
 
-error() {
+function error() {
     echo -e "\033[031m" $1 "\033[0m"
 }
 
