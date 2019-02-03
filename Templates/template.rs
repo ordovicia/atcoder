@@ -11,7 +11,7 @@ use fmt::{Debug, Display};
 macro_rules! input {
     (source = $s:expr, $($r:tt)*) => {
         let mut iter = $s.split_whitespace();
-        input_inner!{iter, $($r)*}
+        _input_inner!(iter, $($r)*)
     };
     ($($r:tt)*) => {
         let mut s = {
@@ -21,35 +21,40 @@ macro_rules! input {
             s
         };
         let mut iter = s.split_whitespace();
-        input_inner!{iter, $($r)*}
+        _input_inner!(iter, $($r)*)
     };
 }
 
-macro_rules! input_inner {
+macro_rules! _input_inner {
     ($iter:expr) => {};
     ($iter:expr, ) => {};
 
     ($iter:expr, $var:ident : $t:tt $($r:tt)*) => {
-        let $var = read_value!($iter, $t);
-        input_inner!{$iter $($r)*}
+        let $var = _read_value!($iter, $t);
+        _input_inner!($iter $($r)*)
+    };
+
+    ($iter:expr, mut $var:ident : $t:tt $($r:tt)*) => {
+        let mut $var = _read_value!($iter, $t);
+        _input_inner!($iter $($r)*)
     };
 }
 
-macro_rules! read_value {
+macro_rules! _read_value {
     ($iter:expr, ( $($t:tt),* )) => {
-        ( $(read_value!($iter, $t)),* )
+        ( $(_read_value!($iter, $t)),* )
     };
 
     ($iter:expr, [ $t:tt ; $len:expr ]) => {
-        (0..$len).map(|_| read_value!($iter, $t)).collect::<Vec<_>>()
+        (0..$len).map(|_| _read_value!($iter, $t)).collect::<Vec<_>>()
     };
 
     ($iter:expr, chars) => {
-        read_value!($iter, String).chars().collect::<Vec<char>>()
+        _read_value!($iter, String).chars().collect::<Vec<char>>()
     };
 
     ($iter:expr, usize1) => {
-        read_value!($iter, usize) - 1
+        _read_value!($iter, usize) - 1
     };
 
     ($iter:expr, $t:ty) => {
@@ -58,23 +63,22 @@ macro_rules! read_value {
 }
 
 #[cfg(feature = "debug")]
-macro_rules! dbg {
-    ($($args: tt)*) => { eprint!($($args)*) };
-}
-
-#[cfg(feature = "debug")]
-macro_rules! dbgln {
-    ($($args: tt)*) => { eprintln!($($args)*) };
-}
-
-#[cfg(not(feature = "debug"))]
-macro_rules! dbg {
-    ($($args:tt)*) => {};
+macro_rules! d {
+    ($val:expr) => {
+        match $val {
+            tmp => {
+                eprintln!("[{}] {} = {:#?}", line!(), stringify!($val), &tmp);
+                tmp
+            }
+        }
+    };
 }
 
 #[cfg(not(feature = "debug"))]
-macro_rules! dbgln {
-    ($($args:tt)*) => {};
+macro_rules! d {
+    ($val:expr) => {
+        $val
+    };
 }
 
 mod num {
@@ -95,13 +99,23 @@ mod bits {
     pub fn is_high(bits: u64, pos: u64) -> bool {
         bits & (1 << pos) != 0
     }
+
+    /// len(0b1010) = 4
+    /// len(0b1) = 1
+    /// len(0b0) = 0
+    pub fn len(bits: u64) -> usize {
+        for b in 0..64 {
+            if is_high(bits, 63 - b) {
+                return (64 - b) as usize;
+            }
+        }
+
+        return 0;
+    }
 }
 
 fn main() {
-    // input!(n: usize, m: usize, board: [[i32; m]; n]);
-    // println!("{:?}", board);
-
-    // input!(h: usize, w: usize, board: [chars; h]);
+    // input!(n: usize, m: usize, mut board: [[i32; m]; n]);
     // println!("{:?}", board);
 }
 
