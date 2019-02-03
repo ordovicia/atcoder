@@ -1,0 +1,10 @@
+[package]
+name = "c"
+version = "0.1.0"
+authors = ["Hidehito Yabuuchi <hdht.ybuc@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[features]
+debug = []
