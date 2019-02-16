@@ -3,9 +3,12 @@
 use std::{cell, cmp, collections, fmt, ops};
 
 use cell::{Cell, RefCell};
-use cmp::Ordering::{Equal, Greater, Less};
+use cmp::Ordering::{self, Equal, Greater, Less};
 use collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use fmt::{Debug, Display};
+use ops::{
+    Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Not, Sub, SubAssign,
+};
 
 // https://qiita.com/tanakh/items/0ba42c7ca36cd29d0ac8
 macro_rules! input {
@@ -82,7 +85,25 @@ macro_rules! d {
 }
 
 mod num {
-    //
+    pub fn gcd(a: u64, b: u64) -> u64 {
+        if b == 0 {
+            a
+        } else {
+            gcd(b, a % b)
+        }
+    }
+
+    pub fn gcd_list(a: &[u64]) -> u64 {
+        a.iter().fold(a[0], |a, b| gcd(a, *b))
+    }
+
+    pub fn lcm(a: u64, b: u64) -> u64 {
+        a * b / gcd(a, b)
+    }
+
+    pub fn lcm_list(a: &[u64]) -> u64 {
+        a.iter().fold(a[0], |a, b| lcm(a, *b))
+    }
 }
 
 macro_rules! vmin {
