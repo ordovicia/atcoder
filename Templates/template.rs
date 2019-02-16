@@ -12,7 +12,7 @@ use ops::{
 
 // https://qiita.com/tanakh/items/0ba42c7ca36cd29d0ac8
 macro_rules! input {
-    (source = $s:expr, $($r:tt)*) => {
+    (src = $s:expr, $($r:tt)*) => {
         let mut iter = $s.split_whitespace();
         _input_inner!(iter, $($r)*)
     };
@@ -21,6 +21,18 @@ macro_rules! input {
             use std::io::Read;
             let mut s = String::new();
             std::io::stdin().read_to_string(&mut s).unwrap();
+            s
+        };
+        input!(src = s, $($r)*)
+    };
+}
+
+macro_rules! inputln {
+    ($($r:tt)*) => {
+        let mut s = {
+            use std::io::Read;
+            let mut s = String::new();
+            std::io::stdin().read_line(&mut s).unwrap();
             s
         };
         let mut iter = s.split_whitespace();
@@ -33,35 +45,35 @@ macro_rules! _input_inner {
     ($iter:expr, ) => {};
 
     ($iter:expr, $var:ident : $t:tt $($r:tt)*) => {
-        let $var = _read_value!($iter, $t);
+        let $var = _parse_value!($iter, $t);
         _input_inner!($iter $($r)*)
     };
 
     ($iter:expr, mut $var:ident : $t:tt $($r:tt)*) => {
-        let mut $var = _read_value!($iter, $t);
+        let mut $var = _parse_value!($iter, $t);
         _input_inner!($iter $($r)*)
     };
 }
 
-macro_rules! _read_value {
+macro_rules! _parse_value {
     ($iter:expr, ( $($t:tt),* )) => {
-        ( $(_read_value!($iter, $t)),* )
+        ( $(_parse_value!($iter, $t)),* )
     };
 
     ($iter:expr, [ $t:tt ; $len:expr ]) => {
-        (0..$len).map(|_| _read_value!($iter, $t)).collect::<Vec<_>>()
+        (0..$len).map(|_| _parse_value!($iter, $t)).collect::<Vec<_>>()
     };
 
     ($iter:expr, chars) => {
-        _read_value!($iter, String).chars().collect::<Vec<char>>()
+        _parse_value!($iter, String).chars().collect::<Vec<char>>()
     };
 
     ($iter:expr, usize1) => {
-        _read_value!($iter, usize) - 1
+        _parse_value!($iter, usize) - 1
     };
 
     ($iter:expr, $t:ty) => {
-        $iter.next().unwrap().parse::<$t>().expect("Parse error")
+        $iter.next().expect("No item left").parse::<$t>().expect("Parse error")
     };
 }
 
@@ -107,13 +119,13 @@ mod num {
 }
 
 macro_rules! vmin {
-    ($x: expr, $y: expr) => { cmp::min($x, $y) };
-    ($x: expr, $($args: expr),*) => { cmp::min($x, vmin!($($args),*)) };
+    ($x:expr, $y:expr) => { cmp::min($x, $y) };
+    ($x:expr, $($args:expr),*) => { cmp::min($x, vmin!($($args),*)) };
 }
 
 macro_rules! vmax {
-    ($x: expr, $y: expr) => { cmp::max($x, $y) };
-    ($x: expr, $($args: expr),*) => { cmp::max($x, vmax!($($args),*)) };
+    ($x:expr, $y:expr) => { cmp::max($x, $y) };
+    ($x:expr, $($args:expr),*) => { cmp::max($x, vmax!($($args),*)) };
 }
 
 mod bits {
@@ -136,8 +148,8 @@ mod bits {
 }
 
 fn main() {
-    // input!(n: usize, m: usize, mut board: [[i32; m]; n]);
-    // println!("{:?}", board);
+    input!(n: usize, m: usize, mut board: [[i32; m]; n]);
+    println!("{:?}", board);
 }
 
 #[cfg(test)]
