@@ -1,0 +1,15 @@
+[package]
+name = "testcase-scraping"
+version = "0.1.0"
+authors = ["Hidehito Yabuuchi <hdht.ybuc@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+env_logger = "0.6.0"
+lazy_static = "1.2.0"
+log = "0.4.6"
+regex = "1.1.0"
+reqwest = "0.9.9"
+scraper = "0.9.1"
+select = "0.4.2"
+url = "1.7.2"

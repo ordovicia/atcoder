@@ -19,10 +19,7 @@ debug = []
 EOF
 
         cp $root/Templates/template.rs $d/src/main.rs
-
-        mkdir $d/testcases/
         cp $root/Templates/test.sh $d/
-        touch $d/testcases/test{1,2,3}.{in,out}
     done
 }
 
