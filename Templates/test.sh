@@ -18,11 +18,11 @@ fi
 cd $root/testcases
 
 for f in *.in; do
-    if [ $(wc -l $f | cut -d' ' -f 1) = 0 ]; then
+    if [ $(wc -l $f | cut -d' ' -f 1) -eq 0 ]; then
         continue;
     fi
 
-    echo -n "Running \"$f\" ... "
+    echo -n "Running against \"$f\" ... "
 
     expected="$(cat ${f%.in}.out)"
     actually="$(cargo run < $f 2> /dev/null)"
