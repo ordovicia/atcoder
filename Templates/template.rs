@@ -96,6 +96,21 @@ macro_rules! d {
     };
 }
 
+macro_rules! vmin {
+    ($x:expr, $y:expr) => { cmp::min($x, $y) };
+    ($x:expr, $($args:expr),*) => { cmp::min($x, vmin!($($args),*)) };
+}
+
+macro_rules! vmax {
+    ($x:expr, $y:expr) => { cmp::max($x, $y) };
+    ($x:expr, $($args:expr),*) => { cmp::max($x, vmax!($($args),*)) };
+}
+
+fn main() {
+    input!(n: usize, m: usize, mut board: [[i32; m]; n]);
+    println!("{:?}", board);
+}
+
 mod num {
     pub fn gcd(a: u64, b: u64) -> u64 {
         if b == 0 {
@@ -118,16 +133,6 @@ mod num {
     }
 }
 
-macro_rules! vmin {
-    ($x:expr, $y:expr) => { cmp::min($x, $y) };
-    ($x:expr, $($args:expr),*) => { cmp::min($x, vmin!($($args),*)) };
-}
-
-macro_rules! vmax {
-    ($x:expr, $y:expr) => { cmp::max($x, $y) };
-    ($x:expr, $($args:expr),*) => { cmp::max($x, vmax!($($args),*)) };
-}
-
 mod bits {
     pub fn is_high(bits: u64, pos: u64) -> bool {
         bits & (1 << pos) != 0
@@ -147,9 +152,60 @@ mod bits {
     }
 }
 
-fn main() {
-    input!(n: usize, m: usize, mut board: [[i32; m]; n]);
-    println!("{:?}", board);
+#[derive(Clone, Debug)]
+struct UnionFind {
+    parent: Vec<usize>,
+    size: Vec<usize>,
+    depth: Vec<usize>,
+}
+
+impl UnionFind {
+    fn new(capacity: usize) -> Self {
+        UnionFind {
+            parent: (0..capacity).collect(),
+            size: vec![1; capacity],
+            depth: vec![0; capacity],
+        }
+    }
+
+    fn size(&mut self, a: usize) -> usize {
+        let p = self.find(a);
+        self.size[p]
+    }
+
+    fn find(&mut self, a: usize) -> usize {
+        if self.parent[a] == a {
+            a
+        } else {
+            let p = self.parent[a];
+            self.parent[a] = self.find(p);
+            self.parent[a]
+        }
+    }
+
+    fn same(&mut self, a: usize, b: usize) -> bool {
+        self.find(a) == self.find(b)
+    }
+
+    fn union(&mut self, a: usize, b: usize) {
+        let a = self.find(a);
+        let b = self.find(b);
+        if a == b {
+            return;
+        }
+
+        if self.depth[a] < self.depth[b] {
+            self.parent[a] = b;
+            self.size[b] += self.size[a];
+        } else {
+            self.parent[b] = a;
+            self.size[a] += self.size[b];
+
+            if self.depth[a] == self.depth[b] {
+                self.depth[a] += 1;
+            }
+        }
+    }
 }
 
 #[cfg(test)]
