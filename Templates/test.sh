@@ -12,7 +12,7 @@ if ! cargo build 2> /dev/null; then
     error "Failed"
     exit 1
 else
-    echo
+    echo "Done"
 fi
 
 cd $root/testcases
@@ -28,7 +28,7 @@ for f in *.in; do
     actually="$(cargo run < $f 2> /dev/null)"
 
     if [ "$expected" != "$actually" ]; then
-        error "Failed."
+        error "Failed"
         cat << EOF
 Expected:
 $expected
@@ -38,6 +38,6 @@ $actually
 
 EOF
     else
-        echo
+        echo "Passed"
     fi
 done
