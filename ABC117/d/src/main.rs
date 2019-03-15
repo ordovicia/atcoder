@@ -64,7 +64,7 @@ macro_rules! d {
 
 #[cfg(not(feature = "debug"))]
 macro_rules! d {
-    ($($args:tt)*) => {};
+    ($($args:tt)*) => { $($args)* };
 }
 
 mod num {
@@ -82,39 +82,70 @@ macro_rules! vmax {
 }
 
 mod bits {
-    pub fn is_high(bits: u64, pos: u64) -> bool {
+    pub fn is_high(bits: u64, pos: usize) -> bool {
         bits & (1 << pos) != 0
     }
 
-    pub fn len(bits: u64) -> usize {
-        for b in 0..64 {
-            if is_high(bits, 63 - b) {
-                return (64 - b) as usize;
-            }
+    pub fn len(mut bits: u64) -> usize {
+        let mut p = 0;
+        while bits != 0 {
+            p += 1;
+            bits >>= 1;
         }
-
-        return 0;
+        p
     }
 }
 
 fn main() {
-    // Incorrect
+    const BITS_LEN: usize = 40;
 
-    input!(n: usize, k: u64, nums: [u64; n]);
+    input!(nums_num: usize, k: u64, nums: [u64; nums_num]);
 
-    let mut x = 0;
-    for b in (0..64).rev() {
-        if x | 1 << b > k {
-            continue;
-        }
+    let ans_x_eq_k = (0..BITS_LEN)
+        .map(|b| {
+            let ones_num = nums.iter().filter(|&&n| bits::is_high(n, b)).count();
+            let xor_cnt = if bits::is_high(k, b) {
+                nums_num - ones_num
+            } else {
+                ones_num
+            };
+            (1 << b) * xor_cnt as u64
+        })
+        .sum::<u64>();
 
-        let high_num = nums.iter().filter(|&&n| bits::is_high(n, b)).count();
-        if high_num < n - high_num {
-            x |= 1 << b;
-        }
-    }
+    let ans_x_lt_k = (0..BITS_LEN)
+        .map(|diff_pos| {
+            // Bits of X and K are same in positions [diff_pos + 1, k_len),
+            // differ in diff_pos (i.e. k & (1 << diff_pos) = 1, x & (1 << diff_pos = 0)),
+            // and may differ in [0, diff_pos).
 
-    let ans = nums.iter().map(|n| n ^ x).sum::<u64>();
+            if !bits::is_high(k, diff_pos) {
+                0
+            } else {
+                (0..BITS_LEN)
+                    .map(|b| {
+                        let ones_num = nums.iter().filter(|&&n| bits::is_high(n, b)).count();
+                        let xor_cnt = if b < diff_pos {
+                            cmp::max(ones_num, nums_num - ones_num)
+                        } else if b == diff_pos {
+                            ones_num
+                        } else {
+                            if bits::is_high(k, b) {
+                                nums_num - ones_num
+                            } else {
+                                ones_num
+                            }
+                        };
+
+                        (1 << b) * xor_cnt as u64
+                    })
+                    .sum::<u64>()
+            }
+        })
+        .max()
+        .unwrap();
+
+    let ans = vmax!(ans_x_eq_k, ans_x_lt_k, nums.iter().sum::<u64>());
     println!("{}", ans);
 }
 
