@@ -125,10 +125,16 @@ where
         path::Path,
     };
 
+    static TESTCASES_DIR: &str = "testcases";
+
     log::info!("Write testcases");
 
+    if let Err(e) = fs::create_dir(TESTCASES_DIR) {
+        log::warn!("{}", e);
+    }
+
     for (task, testcases) in testcases {
-        let path = Path::new(task).join("testcases");
+        let path = Path::new(TESTCASES_DIR).join(task);
         log::info!("Write testcases for task `{}` to {:?}", task, path);
 
         let path = path.as_path();
