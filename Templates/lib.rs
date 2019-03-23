@@ -162,8 +162,8 @@ pub mod bits {
     /// assert!(!bits::is_high(0b0100, 0));
     /// assert!(bits::is_high(0b0100, 2));
     /// ```
-    pub fn is_high(bits: u64, pos: u64) -> bool {
-        bits & (1 << pos) != 0
+    pub fn is_high(bits: u64, pos: usize) -> bool {
+        bits & (1 << pos as u64) != 0
     }
 
     /// ```

@@ -3,7 +3,7 @@
 use std::{cell, cmp, collections, fmt, ops};
 
 use cell::{Cell, RefCell};
-use cmp::Ordering::{self, Equal, Greater, Less};
+use cmp::Ordering;
 use collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use fmt::{Debug, Display};
 use ops::{
