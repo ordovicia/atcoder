@@ -1,16 +1,5 @@
-#![allow(unused)]
-
-use std::{cell, cmp, collections, fmt, ops};
-
-use cell::{Cell, RefCell};
-use cmp::Ordering::{self, Equal, Greater, Less};
-use collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
-use fmt::{Debug, Display};
-use ops::{
-    Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Not, Sub, SubAssign,
-};
-
 // https://qiita.com/tanakh/items/0ba42c7ca36cd29d0ac8
+#[macro_export]
 macro_rules! input {
     (src = $s:expr, $($r:tt)*) => {
         let mut iter = $s.split_whitespace();
@@ -27,6 +16,7 @@ macro_rules! input {
     };
 }
 
+#[macro_export]
 macro_rules! inputln {
     ($($r:tt)*) => {
         let mut s = {
@@ -40,6 +30,7 @@ macro_rules! inputln {
     };
 }
 
+#[macro_export]
 macro_rules! _input_inner {
     ($iter:expr) => {};
     ($iter:expr, ) => {};
@@ -55,6 +46,7 @@ macro_rules! _input_inner {
     };
 }
 
+#[macro_export]
 macro_rules! _parse_value {
     ($iter:expr, ( $($t:tt),* )) => {
         ( $(_parse_value!($iter, $t)),* )
@@ -78,6 +70,7 @@ macro_rules! _parse_value {
 }
 
 #[cfg(feature = "debug")]
+#[macro_export]
 macro_rules! d {
     ($val:expr) => {
         match $val {
@@ -90,28 +83,41 @@ macro_rules! d {
 }
 
 #[cfg(not(feature = "debug"))]
+#[macro_export]
 macro_rules! d {
     ($val:expr) => {
         $val
     };
 }
 
+/// ```
+/// # use lib::*;
+/// assert_eq!(vmin!(0, 1), 0);
+/// assert_eq!(vmin!(3, 2, 1), 1);
+/// ```
+#[macro_export]
 macro_rules! vmin {
-    ($x:expr, $y:expr) => { cmp::min($x, $y) };
-    ($x:expr, $($args:expr),*) => { cmp::min($x, vmin!($($args),*)) };
+    ($x:expr, $y:expr) => { std::cmp::min($x, $y) };
+    ($x:expr, $($args:expr),*) => { std::cmp::min($x, vmin!($($args),*)) };
 }
 
+/// ```
+/// # use lib::*;
+/// assert_eq!(vmax!(0, 1), 1);
+/// assert_eq!(vmax!(3, 2, 1), 3);
+/// ```
+#[macro_export]
 macro_rules! vmax {
-    ($x:expr, $y:expr) => { cmp::max($x, $y) };
-    ($x:expr, $($args:expr),*) => { cmp::max($x, vmax!($($args),*)) };
+    ($x:expr, $y:expr) => { std::cmp::max($x, $y) };
+    ($x:expr, $($args:expr),*) => { std::cmp::max($x, vmax!($($args),*)) };
 }
 
-fn main() {
-    input!(n: usize, m: usize, mut board: [[i32; m]; n]);
-    println!("{:?}", board);
-}
-
-mod num {
+pub mod num {
+    /// ```
+    /// # use lib::*;
+    /// assert_eq!(num::gcd(2, 5), 1);
+    /// assert_eq!(num::gcd(4, 6), 2);
+    /// ```
     pub fn gcd(a: u64, b: u64) -> u64 {
         if b == 0 {
             a
@@ -120,27 +126,52 @@ mod num {
         }
     }
 
-    pub fn gcd_list(a: &[u64]) -> u64 {
+    /// ```
+    /// # use lib::*;
+    /// assert_eq!(num::gcd_slice(&[3]), 3);
+    /// assert_eq!(num::gcd_slice(&[2, 5]), 1);
+    /// assert_eq!(num::gcd_slice(&[4, 6, 8]), 2);
+    /// ```
+    pub fn gcd_slice(a: &[u64]) -> u64 {
         a.iter().fold(a[0], |a, b| gcd(a, *b))
     }
 
+    /// ```
+    /// # use lib::*;
+    /// assert_eq!(num::lcm(2, 5), 10);
+    /// assert_eq!(num::lcm(4, 6), 12);
+    /// ```
     pub fn lcm(a: u64, b: u64) -> u64 {
         a * b / gcd(a, b)
     }
 
-    pub fn lcm_list(a: &[u64]) -> u64 {
+    /// ```
+    /// # use lib::*;
+    /// assert_eq!(num::lcm_slice(&[3]), 3);
+    /// assert_eq!(num::lcm_slice(&[2, 5]), 10);
+    /// assert_eq!(num::lcm_slice(&[4, 6, 8]), 24);
+    /// ```
+    pub fn lcm_slice(a: &[u64]) -> u64 {
         a.iter().fold(a[0], |a, b| lcm(a, *b))
     }
 }
 
-mod bits {
+pub mod bits {
+    /// ```
+    /// # use lib::*;
+    /// assert!(!bits::is_high(0b0100, 0));
+    /// assert!(bits::is_high(0b0100, 2));
+    /// ```
     pub fn is_high(bits: u64, pos: u64) -> bool {
         bits & (1 << pos) != 0
     }
 
-    /// len(0b1010) = 4
-    /// len(0b1) = 1
-    /// len(0b0) = 0
+    /// ```
+    /// # use lib::*;
+    /// assert_eq!(bits::len(0b1010), 4);
+    /// assert_eq!(bits::len(0b1), 1);
+    /// assert_eq!(bits::len(0b0), 0);
+    /// ```
     pub fn len(bits: u64) -> usize {
         for b in 0..64 {
             if is_high(bits, 63 - b) {
@@ -153,14 +184,30 @@ mod bits {
 }
 
 #[derive(Clone, Debug)]
-struct UnionFind {
+pub struct UnionFind {
     parent: Vec<usize>,
     size: Vec<usize>,
     depth: Vec<usize>,
 }
 
+/// ```
+/// # use lib::*;
+/// let mut uf = UnionFind::new(4);
+/// assert_eq!(uf.size(0), 1);
+/// assert_eq!(uf.find(0), 0);
+///
+/// uf.union(0, 1);
+/// assert!(uf.same(0, 1));
+/// assert!(uf.find(0) == 0 || uf.find(0) == 1);
+/// assert_eq!(uf.size(0), 2);
+///
+/// uf.union(1, 2);
+/// assert!(uf.same(0, 2));
+/// assert!(uf.find(0) == 0 || uf.find(0) == 1); // not 2
+/// assert_eq!(uf.size(0), 3);
+/// ```
 impl UnionFind {
-    fn new(capacity: usize) -> Self {
+    pub fn new(capacity: usize) -> Self {
         UnionFind {
             parent: (0..capacity).collect(),
             size: vec![1; capacity],
@@ -168,12 +215,12 @@ impl UnionFind {
         }
     }
 
-    fn size(&mut self, a: usize) -> usize {
+    pub fn size(&mut self, a: usize) -> usize {
         let p = self.find(a);
         self.size[p]
     }
 
-    fn find(&mut self, a: usize) -> usize {
+    pub fn find(&mut self, a: usize) -> usize {
         if self.parent[a] == a {
             a
         } else {
@@ -183,11 +230,11 @@ impl UnionFind {
         }
     }
 
-    fn same(&mut self, a: usize, b: usize) -> bool {
+    pub fn same(&mut self, a: usize, b: usize) -> bool {
         self.find(a) == self.find(b)
     }
 
-    fn union(&mut self, a: usize, b: usize) {
+    pub fn union(&mut self, a: usize, b: usize) {
         let a = self.find(a);
         let b = self.find(b);
         if a == b {
@@ -205,15 +252,5 @@ impl UnionFind {
                 self.depth[a] += 1;
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test() {
-        //
     }
 }

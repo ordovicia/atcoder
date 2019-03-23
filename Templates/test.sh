@@ -1,43 +1,58 @@
 #!/bin/bash
 
-function error() {
-    echo -e "\033[031m" $1 "\033[0m"
+set -u
+
+function err {
+    echo -e "\033[031m$1\033[0m"
+}
+
+function ok {
+    echo -e "\033[032m$1\033[0m"
 }
 
 root=$(cd $(dirname $0); pwd)
 cd $root
 
-echo -n "Building ..."
-if ! cargo build 2> /dev/null; then
-    error "Failed"
+if [ ! -e $root/testcases ]; then
+    err "No testcases dir"
     exit 1
-else
-    echo "Done"
 fi
-
 cd $root/testcases
 
-for f in *.in; do
-    if [ $(wc -l $f | cut -d' ' -f 1) -eq 0 ]; then
-        continue;
+for d in *; do (
+    cd $d
+
+    echo -n "Building $d ... "
+    if ! cargo build --bin $d 2> /dev/null; then
+        err "Failed"
+        exit
+    else
+        ok "Done"
     fi
 
-    echo -n "Running against \"$f\" ... "
+    for f in *.in; do
+        if [ $(wc -l $f | cut -d' ' -f 1) -eq 0 ]; then
+            continue;
+        fi
 
-    expected="$(cat ${f%.in}.out)"
-    actually="$(cargo run < $f 2> /dev/null)"
+        echo -n "Running against \"$d/$f\" ... "
 
-    if [ "$expected" != "$actually" ]; then
-        error "Failed"
-        cat << EOF
-Expected:
-$expected
+        expected="$(cat ${f%.in}.out)"
+        actually="$(cargo run --bin $d < $f 2> /dev/null)"
 
-Actually:
-$actually
+        if [ "$expected" != "$actually" ]; then
+            err "Failed"
+            cat << EOF
+    Expected:
+    $expected
+
+    Actually:
+    $actually
 
 EOF
-    else
-        echo "Passed"
-    fi
-done
+        else
+            ok "Passed"
+        fi
+    done
+    echo
+) done
