@@ -1,3 +1,8 @@
+use std::{cmp, collections};
+
+use cmp::Ordering;
+use collections::BinaryHeap;
+
 // https://qiita.com/tanakh/items/0ba42c7ca36cd29d0ac8
 #[macro_export]
 macro_rules! input {
@@ -110,6 +115,25 @@ macro_rules! vmin {
 macro_rules! vmax {
     ($x:expr, $y:expr) => { std::cmp::max($x, $y) };
     ($x:expr, $($args:expr),*) => { std::cmp::max($x, vmax!($($args),*)) };
+}
+
+/// ```
+/// # use lib::*;
+/// let v = vec![2, 1, 0, 3];
+/// assert_eq!(prefix!(v).collect::<Vec<i32>>(), vec![0, 2, 3, 3, 6]);
+/// ```
+#[macro_export]
+macro_rules! prefix {
+    ($iter: expr) => {{
+        use std::iter;
+
+        iter::once(Default::default())
+            .chain($iter.into_iter())
+            .scan(Default::default(), |acc, x| {
+                *acc += x;
+                Some(*acc)
+            })
+    }};
 }
 
 pub mod num {
@@ -252,5 +276,58 @@ impl UnionFind {
                 self.depth[a] += 1;
             }
         }
+    }
+}
+
+// std::cmp::Reverse is stable since 1.19
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+struct Rev<T>(T);
+
+impl<T: PartialOrd> PartialOrd for Rev<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        other.0.partial_cmp(&self.0)
+    }
+}
+
+impl<T: Ord> Ord for Rev<T> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.0.cmp(&self.0)
+    }
+}
+
+/// ```
+/// # use lib::*;
+/// use std::collections::BinaryHeap;
+///
+/// let heap = [1, 0, 2, 3].iter().cloned().collect::<BinaryHeap<_>>();
+/// let sorted = heap.into_iter_sorted().collect::<Vec<_>>();;
+/// assert_eq!(sorted, vec![3, 2, 1, 0]);
+/// ```
+// BinaryHeap::iter() iterates values in arbitrary order.
+pub struct IterSorted<T: Ord> {
+    heap: BinaryHeap<T>,
+}
+
+pub trait IntoIteratorSorted {
+    type Item;
+    type IntoIterSorted: Iterator<Item = Self::Item>;
+
+    fn into_iter_sorted(self) -> Self::IntoIterSorted;
+}
+
+impl<T: Ord> IntoIteratorSorted for BinaryHeap<T> {
+    type Item = T;
+    type IntoIterSorted = IterSorted<T>;
+
+    fn into_iter_sorted(self) -> IterSorted<T> {
+        IterSorted { heap: self }
+    }
+}
+
+impl<T: Ord> Iterator for IterSorted<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.heap.pop()
     }
 }

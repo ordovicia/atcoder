@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use std::{cell, cmp, collections, fmt, ops};
+use std::{cell, cmp, collections, fmt, iter, ops};
 
 use cell::{Cell, RefCell};
 use cmp::Ordering;
