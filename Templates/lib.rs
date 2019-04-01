@@ -178,6 +178,66 @@ pub mod num {
     pub fn lcm_slice(a: &[u64]) -> u64 {
         a.iter().fold(a[0], |a, b| lcm(a, *b))
     }
+
+    /// ```
+    /// # use lib::num::*;
+    /// assert_eq!(next_prime(0), 2);
+    /// assert_eq!(next_prime(1), 2);
+    /// assert_eq!(next_prime(2), 3);
+    /// assert_eq!(next_prime(3), 5);
+    /// ```
+    pub fn next_prime(mut x: u64) -> u64 {
+        while {
+            x += 1;
+            !is_prime(x)
+        } {}
+        x
+    }
+
+    /// ```
+    /// # use lib::num::*;
+    /// assert!(!is_prime(0));
+    /// assert!(!is_prime(1));
+    /// assert!(is_prime(2));
+    /// assert!(is_prime(3));
+    /// assert!(!is_prime(4));
+    /// ```
+    pub fn is_prime(x: u64) -> bool {
+        match x {
+            0 | 1 => false,
+            2 => true,
+            _ => {
+                let ceil = (x as f64).sqrt().ceil() as u64;
+                (2..(ceil + 1)).all(|i| x % i != 0)
+            }
+        }
+    }
+
+    /// ```
+    /// # use lib::num::*;
+    /// assert_eq!(
+    ///     factorize(2 * 2 * 3 * 4 * 5 * 5 * 7 * 9),
+    ///     vec![0, 0, 4, 3, 0, 2, 0, 1]
+    /// );
+    /// ```
+    pub fn factorize(mut x: u64) -> Vec<usize> {
+        let mut pows = vec![];
+        let mut prime = 1_u64;
+        while {
+            prime = next_prime(prime);
+            prime <= x
+        } {
+            while x % prime == 0 {
+                while pows.len() <= prime as usize {
+                    pows.push(0);
+                }
+                pows[prime as usize] += 1;
+                x /= prime;
+            }
+        }
+
+        pows
+    }
 }
 
 pub mod bits {
@@ -304,6 +364,7 @@ impl<T: Ord> Ord for Rev<T> {
 /// assert_eq!(sorted, vec![3, 2, 1, 0]);
 /// ```
 // BinaryHeap::iter() iterates values in arbitrary order.
+// std::iter::from_fn() is stable since 1.34
 pub struct IterSorted<T: Ord> {
     heap: BinaryHeap<T>,
 }
@@ -331,3 +392,33 @@ impl<T: Ord> Iterator for IterSorted<T> {
         self.heap.pop()
     }
 }
+
+pub trait Digits {
+    fn digits(self, radix: Self) -> usize;
+}
+
+macro_rules! impl_digits_int {
+    ($int:ty) => {
+        impl Digits for $int {
+            fn digits(mut self, radix: Self) -> usize {
+                let mut ans = 0;
+                while self > 0 {
+                    ans += 1;
+                    self /= radix;
+                }
+                ans
+            }
+        }
+    };
+}
+
+impl_digits_int!(i8);
+impl_digits_int!(u8);
+impl_digits_int!(i16);
+impl_digits_int!(u16);
+impl_digits_int!(i32);
+impl_digits_int!(u32);
+impl_digits_int!(i64);
+impl_digits_int!(u64);
+impl_digits_int!(isize);
+impl_digits_int!(usize);
