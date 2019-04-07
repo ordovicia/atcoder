@@ -341,7 +341,7 @@ impl UnionFind {
 
 // std::cmp::Reverse is stable since 1.19
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-struct Rev<T>(T);
+pub struct Rev<T>(T);
 
 impl<T: PartialOrd> PartialOrd for Rev<T> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {

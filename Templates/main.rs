@@ -9,6 +9,7 @@ use fmt::{Debug, Display};
 use ops::{
     Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Not, Sub, SubAssign,
 };
+use std::str::FromStr;
 
 use lib::*;
 
